@@ -26,14 +26,32 @@ public class LecturerController {
         try {
             Page<Lecturer> lecturers = lecturerService.listLecturer(page, pageSize, sortDirection, orderBy);
             return ResponseEntity.status(HttpStatus.OK).body(new PagingResponse<>("Successfully Get All Lecturers", lecturers));
-        }catch(Exception e){
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorResponse("X01",e.getMessage()));
+        } catch(Exception e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorResponse("X01", e.getMessage()));
         }
+    }
+    
+    @GetMapping("/{id}")
+    public ResponseEntity getLecturerById(@PathVariable("id") Long id) throws Exception {
+        Lecturer lecturer = lecturerService.getById(id);
+        return ResponseEntity.status(HttpStatus.OK).body(new SuccessResponse<>("Successfully find lecturer id "+id, lecturer));
     }
     
     @PostMapping
     public ResponseEntity createLecturer(@Valid @RequestBody Lecturer lecturer) throws Exception {
         Lecturer result = lecturerService.createLecturer(lecturer);
         return ResponseEntity.status(HttpStatus.CREATED).body(new SuccessResponse<>("Successfully Create Lecturer", result));
+    }
+    
+    @PutMapping("/{id}")
+    public ResponseEntity updateLecturer(@Valid @RequestBody Lecturer lecturer, @PathVariable("id") Long id) throws Exception {
+        lecturerService.updateLecturer(lecturer, id);
+        return ResponseEntity.status(HttpStatus.OK).body(new SuccessResponse<>("Successfully Update Lecturer "+id, lecturer));
+    }
+    
+    @DeleteMapping("/{id}")
+    public ResponseEntity deleteLecturer(@PathVariable("id") Long id) throws Exception {
+        lecturerService.deleteLecturer(id);
+        return ResponseEntity.status(HttpStatus.ACCEPTED).body(new SuccessResponse<>("", "Successfully deleted lecturer "+id));
     }
 }

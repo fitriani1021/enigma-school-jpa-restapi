@@ -1,6 +1,7 @@
 package com.enigmacamp.service;
 
 import com.enigmacamp.exception.EntityExistException;
+import com.enigmacamp.exception.NotFoundException;
 import com.enigmacamp.model.Lecturer;
 import com.enigmacamp.repository.LecturerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +11,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+
+import java.util.Optional;
 
 @Service
 public class LecturerServiceImpl implements LecturerService{
@@ -25,12 +28,42 @@ public class LecturerServiceImpl implements LecturerService{
     }
     
     @Override
+    public Lecturer getById(Long id) throws Exception {
+        Optional<Lecturer> lecturer =lecturerRepository.findById(id);
+        if(lecturer.isEmpty()) {
+            throw new NotFoundException("Student " + id + " not found");
+        }
+        return lecturer.get();
+    }
+    
+    @Override
     public Lecturer createLecturer(Lecturer lecturer) throws Exception {
         try {
             Lecturer newLecturer = lecturerRepository.save(lecturer);
             return newLecturer;
         }catch(DataIntegrityViolationException e){
             throw new EntityExistException();
+        }
+    }
+    
+    @Override
+    public void updateLecturer(Lecturer lecturer, Long id) throws Exception {
+        try {
+            Lecturer existingLecturer = getById(id);
+            lecturer.setLecturerId(existingLecturer.getLecturerId());
+            lecturerRepository.save(lecturer);
+        } catch(NotFoundException e) {
+            throw new NotFoundException("Update failed because ID is not found");
+        }
+    }
+    
+    @Override
+    public void deleteLecturer(Long id) throws Exception {
+        try {
+            Lecturer existingLecturer = getById(id);
+            lecturerRepository.delete(existingLecturer);
+        } catch(NotFoundException e) {
+            throw new NotFoundException("Delete failed because ID is not found");
         }
     }
 }

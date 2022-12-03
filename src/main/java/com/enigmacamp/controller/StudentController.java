@@ -1,5 +1,6 @@
 package com.enigmacamp.controller;
 
+import com.enigmacamp.model.Lecturer;
 import com.enigmacamp.model.Student;
 import com.enigmacamp.model.response.ErrorResponse;
 import com.enigmacamp.model.response.PagingResponse;
@@ -31,9 +32,27 @@ public class StudentController {
         }
     }
     
+    @GetMapping("/{id}")
+    public ResponseEntity getStudentById(@PathVariable("id") Long id) throws Exception {
+        Student student = studentService.getById(id);
+        return ResponseEntity.status(HttpStatus.OK).body(new SuccessResponse<>("Successfully find student id "+id, student));
+    }
+    
     @PostMapping
     public ResponseEntity createStudent(@Valid @RequestBody Student student) throws Exception {
         Student result = studentService.createStudent(student);
         return ResponseEntity.status(HttpStatus.CREATED).body(new SuccessResponse<>("Successfully Create Student", result));
+    }
+    
+    @PutMapping("/{id}")
+    public ResponseEntity updateLecturer(@Valid @RequestBody Student student, @PathVariable("id") Long id) throws Exception {
+        studentService.updateStudent(student, id);
+        return ResponseEntity.status(HttpStatus.OK).body(new SuccessResponse<>("Successfully Update student "+id, student));
+    }
+    
+    @DeleteMapping("/{id}")
+    public ResponseEntity deleteLecturer(@PathVariable("id") Long id) throws Exception {
+        studentService.deleteStudent(id);
+        return ResponseEntity.status(HttpStatus.ACCEPTED).body(new SuccessResponse<>("", "Successfully deleted student "+id));
     }
 }
